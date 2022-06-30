@@ -4,9 +4,108 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio comp</title>
+    <title>Compare audio</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .wrapper {
+            margin:auto;
+            padding-top:3em;
+            display:flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #audio-container {
+            margin: 2em 2em;
+        }
+        #switcher {
+            background-color: #323232;
+            color: white;
+            padding: 0.5em 1em;
+            border-radius: 100px;
+            font-size: 1em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+           box-shadow: 0 2px 2px rgba(0,0,0,0.2);
+            
+        }
+        #switcher:hover {
+            background-color: black;
+            cursor:pointer;
+        }
+        #switcher:active {
+            box-shadow: none;
+            transform: translateY(2px);
+        }
+        #label {
+            display:flex;
+            flex-direction: column;
+            text-align: center;
+            color: #999;
+        }
+        #label strong {
+            color:black;
+            margin-bottom: 0.2em;
+        }
+
+        audio::-webkit-media-controls-mute-button, audio::-webkit-media-controls-volume-slider, audio::-webkit-media-controls-volume-slider-container {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    Hello
+    <div class="wrapper">
+        <h1>Compare audio</h1>
+        <div id="label">active audio file name</div>
+        <section id="audio-container">
+            <audio id="audio1" src="bluehighway.mp3" controls></audio>
+            <audio id="audio2" src="bygrace.mp3"></audio>
+        </section>
+        <button id="switcher">Switch</button>
+    </div>
+
+    <script>
+        let audio1 = document.querySelector("#audio1");
+        let audio2 = document.querySelector("#audio2");
+        const switchBtn = document.querySelector("#switcher");   
+        let label = document.querySelector("#label");
+
+        let activeAudio = audio1;
+        let passiveAudio = audio2;
+        activeAudio.volume = 1;
+        passiveAudio.volume = 0;
+        
+        function setLabel(node) {
+            node.innerHTML = "<strong>" + activeAudio.getAttribute("src") + "</strong>" + " " + passiveAudio.getAttribute("src");
+        }
+        setLabel(label);
+
+        audio1.addEventListener("play", () => {
+            audio2.play();
+            
+        });
+        audio1.addEventListener("pause", () => {
+            audio2.pause();
+        });
+        audio1.addEventListener("timeupdate", () => {
+            if(audio1.paused){
+                audio2.currentTime = audio1.currentTime;
+            }
+        });
+
+        switchBtn.addEventListener("click", () => {
+            let temp = activeAudio;
+            activeAudio = passiveAudio;
+            passiveAudio = temp;
+            activeAudio.volume = 1;
+            activeAudio.muted = false;
+            passiveAudio.volume = 0;
+            passiveAudio.muted = true;
+            setLabel(label);
+        });
+
+
+    </script>
 </body>
 </html>
